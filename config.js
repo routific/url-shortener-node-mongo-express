@@ -1,6 +1,7 @@
 var config = {};
 
-var env = process.env.NODE_ENV || 'development'
+var env = process.env.NODE_ENV || 'development';
+config.port = process.env.PORT || 3000;
 
 config.webhost = process.env['WEBHOST'] || 'http://localhost:3000/';
 config.shortIdPre = process.env['PREPEND'] || '';
