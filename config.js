@@ -1,9 +1,13 @@
 var config = {};
 
-config.db = {};
-config.webhost = 'http://localhost:3000/';
+var env = process.env.NODE_ENV || 'development'
 
-config.db.host = 'localhost';
-config.db.name = 'url_shortener';
+config.webhost = process.env['WEBHOST'] || 'http://localhost:3000/';
+config.shortIdPre = process.env['PREPEND'] || '';
+
+var mongoAddr = process.env.MONGO_ADDR || 'localhost';
+var mongoDbName = (env === 'development') ? 'routific-api' : 'routific-api-' + env;
+var mongoDefault = 'mongodb://' + mongoAddr + '/' + mongoDbName;
+config.mongoUrl = process.env['MONGOLAB_URI'] || mongoDefault;
 
 module.exports = config;

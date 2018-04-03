@@ -1,31 +1,22 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var CounterSchema = Schema({
-    _id: {type: String, required: true},
-    seq: { type: Number, default: 0 }
-});
-
-var counter = mongoose.model('counter', CounterSchema);
-
 // create a schema for our links
 var urlSchema = new Schema({
-  _id: {type: Number, index: true},
   long_url: String,
+  short_id: String,
   created_at: Date
 });
+// create indexes
+urlSchema.index({ long_url: 1 });
+urlSchema.index({ short_id: 1 });
 
 urlSchema.pre('save', function(next){
   var doc = this;
-  counter.findByIdAndUpdate({_id: 'url_count'}, {$inc: {seq: 1} }, function(error, counter) {
-      if (error)
-          return next(error);
-      doc.created_at = new Date();
-      doc._id = counter.seq;
-      next();
-  });
+  doc.created_at = new Date();
+  next();
 });
 
-var Url = mongoose.model('Url', urlSchema);
+var Url = mongoose.model('ShortUrl', urlSchema);
 
 module.exports = Url;
