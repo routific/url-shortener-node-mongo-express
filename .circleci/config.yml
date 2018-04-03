@@ -1,0 +1,63 @@
+version: 2
+jobs:
+  build-job:
+    docker:
+      - image: circleci/node:6.14.1
+      - image: mongo:3.4.4
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Print npm version
+          command: npm --version
+      - run:
+          name: Install npm dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Run tests
+          command: npm test
+  deploy-master-job:
+    docker:
+      - image: circleci/node:6.14.0
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Print npm version
+          command: npm --version
+      - run:
+          name: Install npm dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Install python dependencies for deployment
+          command: |
+            sudo apt-get install python-pip python-dev build-essential jq
+            sudo pip install awscli
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region us-east-1
+      - deploy:
+          name: Deploy to S3 and call EB
+          command: sh ./.circleci/deploy.sh $(git rev-parse HEAD) Production
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build-job
+      - deploy-master-job:
+          requires:
+            - build-job
+          filters:
+            branches:
+              only: master
