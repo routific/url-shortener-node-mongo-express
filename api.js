@@ -18,7 +18,9 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/v1.0/shorten', function(req, res){
+  console.log('POST /api/v1.0/shorten');
   var longUrl = req.body.long_url;
+  console.log({longUrl});
 
   if (!longUrl) {
     return res.status(400).send('Missing required field: long_url')
@@ -40,6 +42,7 @@ app.post('/api/v1.0/shorten', function(req, res){
       // the document exists, so we return it without creating a new entry
       response.short_id = doc.short_id;
       response.short_url = generateShortUrl(doc.short_id);
+      console.log('url found', {response});
       return res.send(response);
     } else {
       // since it doesn't exist, let's go ahead and create it:
@@ -56,6 +59,7 @@ app.post('/api/v1.0/shorten', function(req, res){
         }
         response.short_id = shortUrlId;
         response.short_url = generateShortUrl(shortUrlId);
+        console.log('url not found', {response});
         return res.send(response);
       });
     }
@@ -63,14 +67,18 @@ app.post('/api/v1.0/shorten', function(req, res){
 });
 
 app.get('/:short_id', function(req, res){
+  console.log('GET /:short_id');
 
   var shortUrlId = req.params.short_id;
+  console.log({shortUrlId});
 
   // check if url already exists in database
   Url.findOne({short_id: shortUrlId}, function (err, doc){
     if (doc) {
+      console.log(`Redirecting to ${doc.long_url}`);
       return res.redirect(doc.long_url);
     } else {
+      console.log(`Redirecting to ${config.webhost}`);
       return res.redirect(config.webhost);
     }
   });
