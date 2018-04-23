@@ -9,6 +9,11 @@ var mongoose = require('./lib/mongooseConnect');
 // grab the url model
 var Url = require('./models/url');
 
+// Avoid having `_` in short IDs
+// https://github.com/routific/routific-full-product/issues/2280
+var allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-@'
+shortid.characters(allowedShortIdChars)
+
 function generateShortUrl(shortid) {
   return config.webhost + shortid;
 }
