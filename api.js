@@ -9,10 +9,10 @@ var mongoose = require('./lib/mongooseConnect');
 // grab the url model
 var Url = require('./models/url');
 
-// Avoid having `_` and `@` in short IDs
+// Avoid having `_`, '-' and `@` in short IDs
 // https://github.com/routific/routific-full-product/issues/2280
 // https://github.com/routific/routific-full-product/issues/2368
-var allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-$'
+var allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 shortid.characters(allowedShortIdChars)
 
 function generateShortUrl(shortid) {
