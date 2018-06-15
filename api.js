@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
-var shortid = require('shortid');
+var generate = require('nanoid/generate');
 var config = require('./config');
 var mongoose = require('./lib/mongooseConnect');
 
@@ -13,10 +13,21 @@ var Url = require('./models/url');
 // https://github.com/routific/routific-full-product/issues/2280
 // https://github.com/routific/routific-full-product/issues/2368
 var allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-shortid.characters(allowedShortIdChars)
+var minNumChars = 8
+var maxNumChars = 10
 
-function generateShortUrl(shortid) {
-  return config.webhost + shortid;
+// Randomly generate the valid number of characters to be generated in short ID
+// It should return either 8, 9 or 10
+function getRandomNumGeneratedChars() {
+  return Math.floor(Math.random() * (maxNumChars - minNumChars + 1)) + minNumChars
+}
+
+function generateShortId() {
+  return generate(allowedShortIdChars, getRandomNumGeneratedChars());
+}
+
+function generateShortUrl(id) {
+  return config.webhost + id;
 }
 
 app.use(bodyParser.json());
@@ -52,7 +63,7 @@ app.post('/api/v1.0/shorten', function(req, res){
       return res.send(response);
     } else {
       // since it doesn't exist, let's go ahead and create it:
-      var shortUrlId = config.shortIdPre + shortid.generate();
+      var shortUrlId = config.shortIdPre + generateShortId();
       var newUrl = Url({
         long_url: longUrl,
         short_id: shortUrlId
