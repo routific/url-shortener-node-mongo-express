@@ -12,6 +12,8 @@ jobs:
           name: Print npm version
           command: npm --version
       - run:
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run:
           name: Install npm dependencies
           command: npm install
       - save_cache:
@@ -31,6 +33,8 @@ jobs:
       - run:
           name: Print npm version
           command: npm --version
+      - run:
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
       - run:
           name: Install npm dependencies
           command: npm install

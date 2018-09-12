@@ -16,6 +16,8 @@ const allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNO
 const minNumChars = 8
 const maxNumChars = 10
 
+const logger = require('./lib/logger')({ module: 'router' })
+
 // Randomly generate the valid number of characters to be generated in short ID
 // It should return either 8, 9 or 10
 function getRandomNumGeneratedChars() {
@@ -35,9 +37,8 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/v1.0/shorten', function(req, res){
-  console.log('POST /api/v1.0/shorten');
   let longUrl = req.body.long_url;
-  console.log({longUrl});
+  logger.info({ message: 'POST /api/v1.0/shorten', context: { long_url: longUrl } });
 
   if (!longUrl) {
     return res.status(400).send('Missing required field: long_url')
@@ -58,7 +59,7 @@ app.post('/api/v1.0/shorten', function(req, res){
       // the document exists, so we return it without creating a new entry
       response.short_id = doc.short_id;
       response.short_url = generateShortUrl(doc.short_id);
-      console.log('url found', {response});
+      logger.info({ message: 'Url found', context: {response} });
       return res.send(response);
     } else {
       // since it doesn't exist, let's go ahead and create it:
@@ -71,11 +72,11 @@ app.post('/api/v1.0/shorten', function(req, res){
       // save the new link
       newUrl.save(function(err) {
         if (err){
-          console.log(err);
+          logger.error({ message: 'Failed to create new url', error: err });
         }
         response.short_id = shortUrlId;
         response.short_url = generateShortUrl(shortUrlId);
-        console.log('url not found', {response});
+        logger.info({ message: 'New url created', context: {response} });
         return res.send(response);
       });
     }
@@ -83,20 +84,14 @@ app.post('/api/v1.0/shorten', function(req, res){
 });
 
 app.get('/:short_id', function(req, res){
-  console.log('GET /:short_id');
-
   const shortUrlId = req.params.short_id;
-  console.log({shortUrlId});
+  logger.info({ message: 'GET /:short_id', context: { short_id: shortUrlId } });
 
   // check if url already exists in database
   Url.findOne({short_id: shortUrlId}, function (err, doc){
-    if (doc) {
-      console.log(`Redirecting to ${doc.long_url}`);
-      return res.redirect(doc.long_url);
-    } else {
-      console.log(`Redirecting to ${config.webhost}`);
-      return res.redirect(config.webhost);
-    }
+    const destination = (doc != null) ? doc.long_url : config.webhost;
+    logger.info({ message: 'Redirecting', context: { destination } });
+    return res.redirect(destination);
   });
 });
 
