@@ -4,11 +4,11 @@
   "description": "A NodeJS + Express + MongoDB based URL shortener",
   "main": "app.js",
   "scripts": {
-    "start": "node server",
-    "start-local": "node server | ./node_modules/.bin/bunyan",
+    "production": "node server >> /var/log/url-shortener.log",
+    "start": "node server | ./node_modules/.bin/bunyan",
     "test": "NODE_ENV=test mocha"
   },
-  "author": "coligo.io",
+  "author": "Routific",
   "license": "MIT",
   "dependencies": {
     "@routific/utils": "3.0.1",
