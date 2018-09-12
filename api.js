@@ -1,20 +1,20 @@
-var express = require('express');
-var app = express();
-var path = require('path');
-var bodyParser = require('body-parser');
-var generate = require('nanoid/generate');
-var config = require('./config');
-var mongoose = require('./lib/mongooseConnect');
+const express = require('express');
+const app = express();
+const path = require('path');
+const bodyParser = require('body-parser');
+const generate = require('nanoid/generate');
+const config = require('./config');
+const mongoose = require('./lib/mongooseConnect');
 
 // grab the url model
-var Url = require('./models/url');
+const Url = require('./models/url');
 
 // Avoid having `_`, '-' and `@` in short IDs
 // https://github.com/routific/routific-full-product/issues/2280
 // https://github.com/routific/routific-full-product/issues/2368
-var allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-var minNumChars = 8
-var maxNumChars = 10
+const allowedShortIdChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const minNumChars = 8
+const maxNumChars = 10
 
 // Randomly generate the valid number of characters to be generated in short ID
 // It should return either 8, 9 or 10
@@ -36,7 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/api/v1.0/shorten', function(req, res){
   console.log('POST /api/v1.0/shorten');
-  var longUrl = req.body.long_url;
+  let longUrl = req.body.long_url;
   console.log({longUrl});
 
   if (!longUrl) {
@@ -44,12 +44,11 @@ app.post('/api/v1.0/shorten', function(req, res){
   }
 
   // prepend http:// to url if missing from request
-  var re = new RegExp("^(http|https)://", "i");
-  var match = re.test(longUrl);
-  if (match == false) {
+  const re = new RegExp("^(http|https)://", "i");
+  if (re.test(longUrl) == false) {
     longUrl = "http://"+longUrl;
   }
-  var response = {
+  let response = {
     long_url: longUrl
   };
 
@@ -63,8 +62,8 @@ app.post('/api/v1.0/shorten', function(req, res){
       return res.send(response);
     } else {
       // since it doesn't exist, let's go ahead and create it:
-      var shortUrlId = config.shortIdPre + generateShortId();
-      var newUrl = Url({
+      const shortUrlId = config.shortIdPre + generateShortId();
+      const newUrl = Url({
         long_url: longUrl,
         short_id: shortUrlId
       });
@@ -86,7 +85,7 @@ app.post('/api/v1.0/shorten', function(req, res){
 app.get('/:short_id', function(req, res){
   console.log('GET /:short_id');
 
-  var shortUrlId = req.params.short_id;
+  const shortUrlId = req.params.short_id;
   console.log({shortUrlId});
 
   // check if url already exists in database
