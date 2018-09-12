@@ -9,7 +9,7 @@ APP_NAME="Routific-UrlShortener"
 EB_BUCKET=ecs-routific
 
 # Update the git sha used in Sentry configuration
-echo $1 > gitSha.txt
+echo $SHA1 > gitSha.txt
 
 echo "Deploying $APP_NAME to Elastic Beanstalk"
 # Create new Elastic Beanstalk version
@@ -25,8 +25,7 @@ ENV_NAME=routificUrlShortener
 if [ "$ENV" = "Production" ]; then
   ENV_NAME="$ENV_NAME-Prod"
 else
-  echo "$ENV not recognized as an environment"
-  exit 1
+  ENV_NAME="$ENV_NAME-testing"
 fi
 
 # Update Elastic Beanstalk environment to new version

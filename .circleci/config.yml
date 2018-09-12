@@ -52,7 +52,7 @@ jobs:
             aws configure set default.region us-east-1
       - deploy:
           name: Deploy to S3 and call EB
-          command: sh ./.circleci/deploy.sh $(git rev-parse HEAD) Production
+          command: sh ./.circleci/deploy.sh $(git rev-parse HEAD) testing
 
 workflows:
   version: 2
@@ -64,4 +64,4 @@ workflows:
             - build-job
           filters:
             branches:
-              only: master
+              only: testing-deploy
