@@ -9,7 +9,7 @@ APP_NAME="Routific-UrlShortener"
 EB_BUCKET=ecs-routific
 
 # Update the git sha used in Sentry configuration
-echo $1 > gitSha.txt
+echo $SHA1 > gitSha.txt
 
 echo "Deploying $APP_NAME to Elastic Beanstalk"
 # Create new Elastic Beanstalk version
