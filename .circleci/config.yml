@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-job:
     docker:
-      - image: circleci/node:10.16.3.0-stretch
+      - image: circleci/node:10.16.3-stretch
       - image: mongo:3.6
     steps:
       - checkout
