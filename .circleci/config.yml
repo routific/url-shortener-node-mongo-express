@@ -2,7 +2,7 @@ version: 2
 jobs:
   build-job:
     docker:
-      - image: circleci/node:8.10.0-stretch
+      - image: circleci/node:10.16.3.0-stretch
       - image: mongo:3.6
     steps:
       - checkout
@@ -25,7 +25,7 @@ jobs:
           command: npm test
   deploy-master-job:
     docker:
-      - image: circleci/node:8.10.0
+      - image: circleci/node:10.16.3
     steps:
       - checkout
       - restore_cache:
