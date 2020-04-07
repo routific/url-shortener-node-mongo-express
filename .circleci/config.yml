@@ -97,8 +97,8 @@ workflows:
             branches:
               only: master
       - deploy-staging-job:
-        requires:
-          - build-job
-        filters:
-          branches:
-            only: staging
+          requires:
+            - build-job
+          filters:
+            branches:
+              only: staging
