@@ -96,3 +96,9 @@ workflows:
           filters:
             branches:
               only: master
+      - deploy-staging-job:
+        requires:
+          - build-job
+        filters:
+          branches:
+            only: staging
