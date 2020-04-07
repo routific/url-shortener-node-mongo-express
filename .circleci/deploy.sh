@@ -24,6 +24,8 @@ aws elasticbeanstalk create-application-version --application-name $APP_NAME \
 ENV_NAME=routificUrlShortener
 if [ "$ENV" = "Production" ]; then
   ENV_NAME="$ENV_NAME-Prod"
+elif [ "$ENV" = "Staging" ]; then
+  ENV_NAME="$ENV_NAME-Staging"
 else
   echo "$ENV not recognized as an environment"
   exit 1

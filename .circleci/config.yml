@@ -23,6 +23,37 @@ jobs:
       - run:
           name: Run tests
           command: npm test
+  deploy-staging-job:
+    docker:
+      - image: circleci/node:10.16.3
+    steps:
+      - checkout
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: Print npm version
+          command: npm --version
+      - run:
+          echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run:
+          name: Install npm dependencies
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: Install python dependencies for deployment
+          command: |
+            sudo apt-get update
+            sudo apt-get install python-pip python-dev build-essential jq
+            sudo pip install awscli
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region us-east-1
+      - deploy:
+          name: Deploy to S3 and call EB
+          command: sh ./.circleci/deploy.sh $(git rev-parse HEAD) Staging
   deploy-master-job:
     docker:
       - image: circleci/node:8.10.0
